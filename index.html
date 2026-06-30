@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>GymComm · Rutina Ángel</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GymComm">
+<meta name="theme-color" content="#070708">
+<style>
+:root{
+  --bg:#0d0d0f; --card:#17181b; --card2:#202126; --line:#2a2a2f;
+  --text:#f5f5f7; --muted:#9898a0; --soft:#5f5f6a;
+  --blue:#2f7df6; --green:#32d74b; --yellow:#ffd60a; --red:#ff453a; --purple:#bf5af2;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px;}
+
+/* HEADER */
+.hdr{padding:12px 16px 10px;background:#070708;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:40;}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;}
+.logo{font-weight:900;font-size:13px;letter-spacing:.08em;}
+.logo span{color:var(--blue);}
+.hdr-kpis{display:flex;gap:8px;margin-top:9px;}
+.hdr-kpi{flex:1;background:var(--card);border:1px solid var(--line);border-radius:9px;
+  padding:7px 8px;text-align:center;}
+.hdr-kpi-val{font-weight:900;font-size:14px;line-height:1;}
+.hdr-kpi-lbl{font-size:8px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+
+/* WEEK SELECTOR */
+.week-bar{display:flex;align-items:center;gap:10px;padding:10px 16px;
+  background:#0a0a0c;border-bottom:1px solid var(--line);
+  position:sticky;top:82px;z-index:39;}
+.week-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.06em;flex:1;}
+.week-btns{display:flex;gap:6px;}
+.wbtn{background:var(--card);border:1px solid var(--line);color:var(--muted);
+  border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;}
+.wbtn.active{background:rgba(47,125,246,.18);border-color:var(--blue);color:#fff;}
+
+/* ROUTINE NAV */
+.rnav{display:flex;gap:0;overflow-x:auto;background:#0a0a0c;
+  border-bottom:1px solid var(--line);position:sticky;top:118px;z-index:38;}
+.rnav::-webkit-scrollbar{display:none;}
+.rnav-btn{flex:1;min-width:58px;border:0;background:transparent;color:var(--muted);
+  padding:10px 6px;font-size:11px;font-weight:700;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.02em;}
+.rnav-btn.active{color:#fff;border-bottom-color:var(--blue);}
+
+/* CONTENT */
+.content{padding:12px 14px 0;}
+
+/* ROUTINE HEADER */
+.routine-hdr{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:13px 14px;margin-bottom:10px;}
+.routine-hdr-name{font-weight:900;font-size:16px;display:flex;align-items:center;gap:8px;}
+.routine-hdr-note{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45;}
+.routine-progress{margin-top:10px;}
+.rp-bar-bg{background:var(--line);border-radius:4px;height:4px;overflow:hidden;}
+.rp-bar-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .3s;}
+.rp-meta{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--soft);}
+
+/* EXERCISE CARD */
+.ex-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.ex-card.all-done{border-color:rgba(50,215,75,.5);}
+.ex-card.has-purple{border-color:rgba(191,90,242,.4);}
+.ex-card.has-yellow{border-color:rgba(255,214,10,.35);}
+
+.ex-header{padding:12px 14px 10px;cursor:pointer;user-select:none;}
+.ex-header-row{display:flex;align-items:center;gap:10px;}
+.ex-num{width:22px;height:22px;border-radius:6px;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+  font-weight:900;color:var(--soft);flex-shrink:0;}
+.ex-name{font-size:14px;font-weight:800;flex:1;line-height:1.25;}
+.ex-badge-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.badge{background:var(--card2);border:1px solid var(--line);border-radius:999px;
+  padding:3px 8px;font-size:10px;color:var(--muted);}
+.badge.blue{background:rgba(47,125,246,.12);border-color:rgba(47,125,246,.3);color:var(--blue);}
+.badge.green{background:rgba(50,215,75,.12);border-color:rgba(50,215,75,.3);color:var(--green);}
+.badge.yellow{background:rgba(255,214,10,.12);border-color:rgba(255,214,10,.3);color:var(--yellow);}
+.badge.purple{background:rgba(191,90,242,.12);border-color:rgba(191,90,242,.3);color:var(--purple);}
+.badge.red{background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.25);color:var(--red);}
+.ex-progress-dots{display:flex;gap:4px;margin-top:8px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .2s;}
+.dot.done{background:var(--green);}
+.dot.partial{background:var(--yellow);}
+
+/* SERIES BODY */
+.ex-body{padding:0 14px 12px;display:none;}
+.ex-body.open{display:block;}
+
+/* Biserie / dropset label */
+.ex-tag{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ex-tag::after{content:"";flex:1;height:1px;background:var(--line);}
+
+/* Previous week reference */
+.prev-ref{background:var(--card2);border:1px solid var(--line);border-radius:9px;
+  padding:8px 10px;margin-bottom:10px;font-size:11px;color:var(--muted);line-height:1.4;}
+.prev-ref-title{font-size:9px;font-weight:800;color:var(--soft);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:4px;}
+
+/* SERIES TABLE */
+.series-table{width:100%;border-collapse:collapse;}
+.series-table th{font-size:9px;color:var(--soft);text-transform:uppercase;
+  letter-spacing:.08em;padding:0 4px 6px;text-align:center;font-weight:800;}
+.series-table th:first-child{text-align:left;padding-left:0;}
+.series-row{border-radius:8px;transition:background .15s;}
+.series-row.done-row{background:rgba(50,215,75,.06);}
+.series-row.improved{background:rgba(50,215,75,.1);}
+.series-num{font-size:12px;font-weight:900;color:var(--soft);padding:4px 8px 4px 0;
+  width:22px;vertical-align:middle;}
+.series-cell{padding:4px 3px;vertical-align:middle;}
+.series-input{
+  width:100%;background:var(--card2);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:7px 6px;
+  font-size:13px;font-weight:700;text-align:center;font-family:inherit;outline:none;
+  transition:border-color .15s;
+}
+.series-input:focus{border-color:var(--blue);}
+.series-input.filled{border-color:rgba(50,215,75,.4);background:rgba(50,215,75,.05);}
+.series-input.improved-val{border-color:rgba(50,215,75,.7);}
+
+/* Target hint */
+.target-hint{font-size:9px;color:var(--soft);text-align:center;margin-top:2px;}
+
+/* Done toggle */
+.done-toggle{width:30px;text-align:center;vertical-align:middle;padding:4px 0;}
+.done-chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);
+  background:transparent;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;margin:0 auto;font-size:12px;font-weight:900;
+  transition:all .15s;flex-shrink:0;}
+.done-chk.checked{background:var(--green);border-color:var(--green);color:#000;}
+
+/* Notes */
+.ex-notes{margin-top:10px;}
+.ex-notes textarea{width:100%;background:var(--card2);border:1px solid var(--line);
+  color:var(--text);border-radius:10px;padding:9px 10px;font-size:12px;
+  font-family:inherit;resize:none;min-height:56px;outline:none;}
+.ex-notes textarea:focus{border-color:var(--blue);}
+.ex-notes-label{font-size:9px;color:var(--soft);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:4px;font-weight:800;}
+
+/* SECTION DIVIDER */
+.section-divider{display:flex;align-items:center;gap:8px;margin:14px 0 10px;}
+.section-divider span{font-size:9px;font-weight:800;color:var(--soft);
+  text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;}
+.section-divider::before,.section-divider::after{content:"";flex:1;height:1px;background:var(--line);}
+
+/* FINISH BUTTON */
+.finish-btn{width:100%;padding:14px;background:var(--green);color:#000;
+  border:0;border-radius:12px;font-size:15px;font-weight:900;cursor:pointer;
+  margin-top:12px;margin-bottom:8px;transition:opacity .15s;}
+.finish-btn:active{opacity:.8;}
+.finish-btn:disabled{background:var(--card2);color:var(--soft);cursor:default;}
+
+/* HISTORY VIEW */
+.hist-week{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;margin-bottom:10px;}
+.hist-week-title{font-weight:900;font-size:13px;margin-bottom:10px;color:var(--muted);}
+.hist-ex{margin-bottom:8px;}
+.hist-ex-name{font-size:12px;font-weight:800;margin-bottom:4px;}
+.hist-series{display:flex;gap:6px;flex-wrap:wrap;}
+.hist-chip{background:var(--card2);border:1px solid var(--line);border-radius:6px;
+  padding:4px 8px;font-size:11px;color:var(--muted);}
+.hist-chip.done{border-color:rgba(50,215,75,.3);color:var(--green);}
+
+/* SUMMARY */
+.sum-view{padding:12px 14px 0;}
+.sum-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.sum-tab{background:var(--card);border:1px solid var(--line);color:var(--muted);
+  border-radius:8px;padding:7px 13px;font-size:11px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.sum-tab.active{background:rgba(47,125,246,.18);border-color:var(--blue);color:#fff;}
+.sum-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;margin-bottom:10px;}
+.sum-card-title{font-weight:900;font-size:14px;margin-bottom:4px;
+  display:flex;align-items:center;gap:8px;}
+.sum-card-sub{font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.spark-row{display:flex;align-items:flex-end;gap:3px;height:44px;margin:10px 0 2px;}
+.spark-bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;}
+.spark-labels{display:flex;gap:3px;margin-bottom:8px;}
+.spark-lbl{flex:1;font-size:8px;color:var(--soft);text-align:center;}
+.ex-sum-row{padding:10px 0;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;}
+.ex-sum-row:last-child{border-bottom:0;padding-bottom:0;}
+.ex-sum-name{font-size:12px;font-weight:800;flex:1;line-height:1.3;}
+.ex-sum-meta{text-align:right;flex-shrink:0;}
+.ex-sum-val{font-size:13px;font-weight:900;}
+.ex-sum-sub{font-size:10px;color:var(--soft);margin-top:1px;}
+.trend-up{color:var(--green);}
+.trend-down{color:var(--red);}
+.trend-same{color:var(--yellow);}
+.trend-new{color:var(--blue);}
+.week-ov{width:100%;border-collapse:collapse;}
+.week-ov th{font-size:9px;color:var(--soft);text-transform:uppercase;
+  letter-spacing:.08em;padding:0 4px 8px;text-align:center;font-weight:800;}
+.week-ov th:first-child{text-align:left;padding-left:0;}
+.week-ov td{font-size:11px;padding:6px 4px;border-top:1px solid var(--line);
+  text-align:center;vertical-align:middle;}
+.week-ov td:first-child{text-align:left;padding-left:0;font-size:11px;font-weight:700;color:var(--muted);}
+.export-area{width:100%;background:var(--card2);border:1px solid var(--line);
+  color:var(--muted);border-radius:10px;padding:10px;font-size:11px;
+  font-family:monospace;min-height:160px;resize:none;margin-top:8px;line-height:1.6;}
+.copy-btn{width:100%;margin-top:8px;background:var(--blue);color:#fff;
+  border:0;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;}
+.copy-btn:active{opacity:.8;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--green);color:#000;padding:10px 18px;border-radius:999px;
+  font-size:13px;font-weight:900;transition:transform .25s;z-index:999;
+  pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.red{background:var(--red);color:#fff;}
+
+@media(max-width:380px){
+  .hdr-kpi-val{font-size:12px;}
+  .ex-name{font-size:13px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div class="logo">GYM<span>COMM</span></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="font-size:11px;color:var(--soft);" id="sheetStatusBadge"></div>
+      <button onclick="openSettings()" style="background:rgba(255,255,255,.07);border:none;color:var(--soft);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px;line-height:1;">⚙️</button>
+    </div>
+  </div>
+  <div class="hdr-kpis">
+    <div class="hdr-kpi"><div class="hdr-kpi-val" id="hkpiEx" style="color:var(--blue)">–</div><div class="hdr-kpi-lbl">ejercicios</div></div>
+    <div class="hdr-kpi"><div class="hdr-kpi-val" id="hkpiSer" style="color:var(--green)">–</div><div class="hdr-kpi-lbl">series</div></div>
+    <div class="hdr-kpi"><div class="hdr-kpi-val" id="hkpiVol">–</div><div class="hdr-kpi-lbl">vol kg</div></div>
+    <div class="hdr-kpi"><div class="hdr-kpi-val" id="hkpiAdh">–</div><div class="hdr-kpi-lbl">completado</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;padding:20px;overflow-y:auto;">
+  <div style="max-width:480px;margin:0 auto;background:#17181b;border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,.1);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:15px;font-weight:600;color:var(--text);">⚙️ Configuración</div>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--soft);font-size:20px;cursor:pointer;">✕</button>
+    </div>
+
+    <div style="font-size:12px;color:var(--soft);margin-bottom:6px;font-weight:600;letter-spacing:.05em;">GOOGLE SHEETS — URL DEL CSV</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">
+      1. Abre tu Sheet → <b>Archivo → Compartir → Publicar en la web</b><br>
+      2. Selecciona la pestaña <b>rutinas</b> y el formato <b>CSV</b><br>
+      3. Copia el enlace y pégalo aquí
+    </div>
+    <input id="sheetUrlInput" type="url"
+      placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."
+      style="width:100%;box-sizing:border-box;background:#0d0d0f;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;margin-bottom:12px;"
+    />
+    <div style="display:flex;gap:8px;">
+      <button onclick="saveSheetUrl()" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;">
+        Guardar y recargar rutina
+      </button>
+      <button onclick="clearSheetUrl()" style="background:rgba(255,59,48,.15);color:#ff3b30;border:1px solid rgba(255,59,48,.25);border-radius:10px;padding:11px 14px;font-size:13px;cursor:pointer;">
+        Limpiar
+      </button>
+    </div>
+    <div id="sheetSaveMsg" style="font-size:11px;color:var(--green);margin-top:10px;display:none;"></div>
+
+    <div style="margin-top:22px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px;">
+      <div style="font-size:12px;color:var(--soft);margin-bottom:8px;font-weight:600;letter-spacing:.05em;">UNIDAD DE CARGA</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">
+        La app guarda internamente todo en kg. Si eliges lb, puedes capturar libras y GymComm mostrará la equivalencia automática en kg.
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button id="unitKgBtn" onclick="setWeightUnit('kg')" class="wbtn" style="flex:1;padding:10px;">kg</button>
+        <button id="unitLbBtn" onclick="setWeightUnit('lb')" class="wbtn" style="flex:1;padding:10px;">lb → kg</button>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px;">
+      <div style="font-size:12px;color:var(--soft);margin-bottom:8px;font-weight:600;letter-spacing:.05em;">ESTADO ACTUAL</div>
+      <div id="sheetStatusDetail" style="font-size:12px;color:var(--muted);line-height:1.6;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WEEK SELECTOR -->
+<div class="week-bar">
+  <div class="week-label">SEMANA</div>
+  <div class="week-btns" id="weekBtns"></div>
+</div>
+
+<!-- ROUTINE NAV -->
+<div class="rnav" id="routineNav"></div>
+
+<!-- CONTENT -->
+<div class="content" id="mainContent"></div>
+
+<!-- SUMMARY VIEW (hidden by default) -->
+<div id="summaryView" style="display:none;"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── PLAN DATA ─────────────────────────────────────────────────────────────
+const ROUTINES_FALLBACK = [
+  {
+    id:"leg", name:"Leg", emoji:"🦵",
+    note:"Sentadilla hack como movimiento principal. Hip thrust doble bloque.",
+    exercises:[
+      {id:"l1", name:"Sentadilla hack", series:3, repsTarget:"5-9", weightRef:15,
+       tags:[], note:""},
+      {id:"l2", name:"Hip thrust — pesado", series:3, repsTarget:"5-9", weightRef:80,
+       tags:[], note:""},
+      {id:"l3", name:"Hip thrust — volumen", series:2, repsTarget:"10-12", weightRef:100,
+       tags:[], note:""},
+      {id:"l4", name:"Femoral sentado", series:4, repsTarget:"5-9", weightRef:110,
+       tags:[], note:""},
+      {id:"l5", name:"Extensión rodilla", series:2, repsTarget:"8·8 drop", weightRef:110,
+       tags:["dropset"], note:""},
+      {id:"l6", name:"Femoral acostado", series:2, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"l7", name:"Abductores", series:2, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+    ]
+  },
+  {
+    id:"push", name:"Push", emoji:"💪",
+    note:"Press horizontal como ancla. Biserie de abdomen al final.",
+    exercises:[
+      {id:"p1", name:"Press pecho horizontal barra", series:3, repsTarget:"6-9", weightRef:100,
+       tags:[], note:""},
+      {id:"p2", name:"Extensión tríceps barra corta", series:3, repsTarget:"6-9", weightRef:47.5,
+       tags:[], note:""},
+      {id:"p3", name:"Press militar máquina", series:4, repsTarget:"6-9", weightRef:55,
+       tags:[], note:""},
+      {id:"p4", name:"Peck fly", series:2, repsTarget:"8·8 drop", weightRef:100,
+       tags:["dropset"], note:""},
+      {id:"p5", name:"Extensión tríceps sobre cabeza", series:2, repsTarget:"8·8 drop", weightRef:42.5,
+       tags:["dropset"], note:""},
+      {id:"p6", name:"Crunch abdominal en banco", series:3, repsTarget:"10-12", weightRef:null,
+       tags:["biserie-a"], note:""},
+      {id:"p7", name:"Crunch inverso en banco", series:3, repsTarget:"10-12", weightRef:null,
+       tags:["biserie-b"], note:""},
+    ]
+  },
+  {
+    id:"pull", name:"Pull", emoji:"🏋️",
+    note:"Remo + jalón como base. Biserie de bíceps al final.",
+    exercises:[
+      {id:"r1", name:"Remo con máquina", series:3, repsTarget:"6-9", weightRef:100,
+       tags:[], note:""},
+      {id:"r2", name:"Curl bíceps supino mancuerna", series:3, repsTarget:"6-9", weightRef:10,
+       tags:[], note:""},
+      {id:"r3", name:"Jalón al pecho agarre medio", series:3, repsTarget:"8-10", weightRef:100,
+       tags:[], note:""},
+      {id:"r4", name:"Curl bíceps bayasian banco inclinado", series:3, repsTarget:"8-10", weightRef:15,
+       tags:["biserie-a"], note:""},
+      {id:"r5", name:"Posterior mancuerna banco inclinado", series:3, repsTarget:"12-14", weightRef:10,
+       tags:["biserie-b"], note:""},
+      {id:"r6", name:"Crunch abdominal máquina", series:3, repsTarget:"8·8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+    ]
+  },
+  {
+    id:"leg2", name:"Leg 2", emoji:"🦵",
+    note:"Press pierna + hip thrust. Biserie extensión/femoral al final. Revisar press unilateral en video.",
+    exercises:[
+      {id:"l2a", name:"Press de pierna inclinado", series:3, repsTarget:"8-10", weightRef:null,
+       tags:[], note:""},
+      {id:"l2b", name:"Hip thrust", series:3, repsTarget:"8-10", weightRef:null,
+       tags:[], note:""},
+      {id:"l2c", name:"Press pierna horizontal unilateral", series:3, repsTarget:"10-12", weightRef:null,
+       tags:["video"], note:"Revisar técnica en video antes de cargar peso."},
+      {id:"l2d", name:"Abductores 3 posiciones", series:3, repsTarget:"8·8·fallo", weightRef:null,
+       tags:[], note:""},
+      {id:"l2e", name:"Extensión rodilla", series:3, repsTarget:"8·8 drop", weightRef:null,
+       tags:["biserie-a","dropset"], note:""},
+      {id:"l2f", name:"Femoral acostado", series:3, repsTarget:"8·8 drop", weightRef:null,
+       tags:["biserie-b","dropset"], note:""},
+      {id:"l2g", name:"Extensión pantorrilla máquina sentado", series:3, repsTarget:"10·10", weightRef:null,
+       tags:[], note:"No costurera."},
+    ]
+  },
+  {
+    id:"upper", name:"Upper", emoji:"🔝",
+    note:"Todo dropset excepto las últimas series de bíceps, tríceps y curl antebrazo.",
+    exercises:[
+      {id:"u1", name:"Press militar", series:4, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"u2", name:"Jalón con triángulo", series:4, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"u3", name:"Press inclinado", series:4, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"u4", name:"Curl predicador", series:4, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"u5", name:"Extensión tríceps unilateral", series:4, repsTarget:"8·8 drop", weightRef:null,
+       tags:["dropset"], note:""},
+      {id:"u6", name:"Curl bayasian banco", series:2, repsTarget:"10-12", weightRef:null,
+       tags:[], note:""},
+      {id:"u7", name:"Francés mancuerna/barra", series:2, repsTarget:"10-12", weightRef:null,
+       tags:[], note:""},
+      {id:"u8", name:"Curl antebrazo", series:3, repsTarget:"fallo", weightRef:null,
+       tags:[], note:""},
+      {id:"u9", name:"Crunch / Crunch invertido", series:3, repsTarget:"fallo", weightRef:null,
+       tags:[], note:""},
+    ]
+  },
+];
+
+// ─── GOOGLE SHEETS LOADER (v3) ──────────────────────────────────────────────
+// The app works fully offline with the hardcoded ROUTINES above as fallback.
+// To connect a Google Sheet: publish it as CSV (File → Share → Publish to web
+// → select "rutinas" sheet → CSV) and paste the URL in the ⚙️ Settings panel.
+// The URL is stored in localStorage under SHEET_KEY.
+
+const SHEET_KEY = "gymcomm_sheet_url";
+let ROUTINES = ROUTINES_FALLBACK; // mutable — replaced if Sheet loads successfully
+let sheetStatus = "fallback"; // "fallback" | "loading" | "ok" | "error"
+
+function parseCSVLine(line){
+  const cells = [];
+  let cur = "", inQ = false;
+  for(let i=0;i<line.length;i++){
+    const c = line[i];
+    if(c==='"'){ inQ=!inQ; }
+    else if(c===','&&!inQ){ cells.push(cur.trim()); cur=""; }
+    else { cur+=c; }
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+function csvToRoutines(csvText){
+  const lines = csvText.trim().split(/\r?\n/);
+  const headers = parseCSVLine(lines[0]).map(h=>h.trim().toLowerCase().replace(/\s+/g,"_"));
+  const rows = lines.slice(1).map(l=>parseCSVLine(l));
+
+  const routineMap = new Map();
+  rows.forEach(row=>{
+    const r = {};
+    headers.forEach((h,i)=>{ r[h]=row[i]||""; });
+    if(!r.routine_id) return;
+
+    if(!routineMap.has(r.routine_id)){
+      routineMap.set(r.routine_id,{
+        id: r.routine_id,
+        name: r.routine_name,
+        emoji: r.routine_emoji||"💪",
+        note: r.routine_note||"",
+        exercises: []
+      });
+    }
+    const routine = routineMap.get(r.routine_id);
+    if(!r.ex_id) return;
+
+    // tags: pipe-separated or comma-separated in the cell
+    const rawTags = r.tags||"";
+    const tags = rawTags ? rawTags.split(/[|,]/).map(t=>t.trim()).filter(Boolean) : [];
+
+    routine.exercises.push({
+      id: r.ex_id,
+      name: r.ex_name,
+      musculo: r.musculo||"",
+      bloque: r.bloque||"",
+      series: parseInt(r.series)||3,
+      repsTarget: r.reps_target||"",
+      weightRef: r.weight_ref ? parseFloat(r.weight_ref) : null,
+      descanso: r.descanso||"",
+      tags,
+      note: r.notas||""
+    });
+  });
+  return Array.from(routineMap.values());
+}
+
+async function loadSheetIfConfigured(){
+  const url = localStorage.getItem(SHEET_KEY);
+  if(!url) return;
+  sheetStatus = "loading";
+  try{
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const text = await res.text();
+    const parsed = csvToRoutines(text);
+    if(!parsed.length) throw new Error("CSV vacío o formato incorrecto");
+    ROUTINES = parsed;
+    sheetStatus = "ok";
+  } catch(e){
+    console.warn("GymComm: no se pudo cargar la Sheet, usando datos locales.", e.message);
+    sheetStatus = "error";
+    ROUTINES = ROUTINES_FALLBACK;
+  }
+}
+
+const WEEKS = 5;
+const KEY = "gymcomm_v1";
+const UNIT_KEY = "gymcomm_weight_unit";
+let weightUnit = localStorage.getItem(UNIT_KEY) || "kg"; // "kg" or "lb"
+
+
+// ─── UNIT HELPERS ───────────────────────────────────────────────────────────
+function roundTo(value, decimals=1){
+  const n = Number(value);
+  if(!Number.isFinite(n)) return "";
+  return String(Math.round(n * Math.pow(10, decimals)) / Math.pow(10, decimals));
+}
+function kgToLb(kg){ return Number(kg) * 2.2046226218; }
+function lbToKg(lb){ return Number(lb) * 0.45359237; }
+function displayWeightValue(kgValue){
+  if(kgValue==="" || kgValue===null || kgValue===undefined) return "";
+  const kg = parseFloat(kgValue);
+  if(!Number.isFinite(kg)) return "";
+  return weightUnit === "lb" ? roundTo(kgToLb(kg), 1) : roundTo(kg, 1);
+}
+function inputWeightToKg(inputValue){
+  if(inputValue==="" || inputValue===null || inputValue===undefined) return "";
+  const n = parseFloat(inputValue);
+  if(!Number.isFinite(n)) return "";
+  const kg = weightUnit === "lb" ? lbToKg(n) : n;
+  return roundTo(kg, 1);
+}
+function weightPlaceholder(weightRef){
+  if(!weightRef) return weightUnit;
+  return weightUnit === "lb" ? roundTo(kgToLb(weightRef), 1) : roundTo(weightRef, 1);
+}
+function weightHint(kgValue){
+  if(kgValue==="" || kgValue===null || kgValue===undefined) return "";
+  const kg = parseFloat(kgValue);
+  if(!Number.isFinite(kg) || kg<=0) return "";
+  return weightUnit === "lb" ? `<div class="target-hint">≈ ${roundTo(kg,1)} kg</div>` : `<div class="target-hint">≈ ${roundTo(kgToLb(kg),1)} lb</div>`;
+}
+function setWeightUnit(unit){
+  weightUnit = unit === "lb" ? "lb" : "kg";
+  localStorage.setItem(UNIT_KEY, weightUnit);
+  updateUnitButtons();
+  toast(weightUnit === "lb" ? "Modo libras activado · se guarda en kg" : "Modo kg activado");
+  renderAll();
+}
+function updateUnitButtons(){
+  const kgBtn = document.getElementById("unitKgBtn");
+  const lbBtn = document.getElementById("unitLbBtn");
+  if(kgBtn) kgBtn.className = "wbtn" + (weightUnit === "kg" ? " active" : "");
+  if(lbBtn) lbBtn.className = "wbtn" + (weightUnit === "lb" ? " active" : "");
+}
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+function defaultState(){
+  const s = { currentRoutine:"leg", currentWeek:1 };
+  ROUTINES.forEach(r=>{
+    for(let w=1;w<=WEEKS;w++){
+      r.exercises.forEach(ex=>{
+        const k = `${r.id}_${ex.id}_w${w}`;
+        // series: array of {weight, reps, done}
+        s[k] = Array.from({length:ex.series},()=>({weight:"",reps:"",done:false}));
+      });
+      s[`note_${r.id}_w${w}`] = "";
+    }
+  });
+  return s;
+}
+
+let state;
+try{
+  const raw = localStorage.getItem(KEY);
+  if(raw){
+    const parsed = JSON.parse(raw);
+    const def = defaultState();
+    // merge — keep defaults for any missing key
+    state = Object.assign(def, parsed);
+  } else { state = defaultState(); }
+}catch(e){ state = defaultState(); }
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+let currentRoutine = state.currentRoutine || "leg";
+let currentWeek    = state.currentWeek    || 1;
+
+// ─── HELPERS ───────────────────────────────────────────────────────────────
+function seriesKey(routineId, exId, week){
+  return `${routineId}_${exId}_w${week}`;
+}
+function getSeries(routineId, exId, week){
+  const k = seriesKey(routineId, exId, week);
+  if(!state[k]) state[k] = [];
+  return state[k];
+}
+
+function routineStats(routineId, week){
+  const r = ROUTINES.find(x=>x.id===routineId);
+  let totalSeries=0, doneSeries=0, totalVol=0, doneEx=0;
+  r.exercises.forEach(ex=>{
+    const s = getSeries(routineId, ex.id, week);
+    const exDone = s.filter(x=>x.done).length === ex.series;
+    if(exDone) doneEx++;
+    s.forEach(sr=>{
+      totalSeries++;
+      if(sr.done){
+        doneSeries++;
+        const w = parseFloat(sr.weight)||0;
+        const rp = parseFloat(sr.reps)||0;
+        totalVol += w*rp;
+      }
+    });
+  });
+  return {totalSeries, doneSeries, totalVol:Math.round(totalVol), doneEx,
+    totalEx:r.exercises.length, pct:Math.round((doneSeries/totalSeries)*100)||0};
+}
+
+function getPrevSeries(routineId, exId, week){
+  if(week<=1) return null;
+  return getSeries(routineId, exId, week-1);
+}
+
+// ─── PROGRESSION ENGINE (v3) ───────────────────────────────────────────────
+// Parses a repsTarget string like "6-9", "8·8 drop", "10-12", "fallo" into {min,max}|null
+function parseRepsRange(repsTarget){
+  if(!repsTarget) return null;
+  const m = repsTarget.match(/(\d+)\s*[-–]\s*(\d+)/);
+  if(m) return {min:parseInt(m[1]), max:parseInt(m[2])};
+  return null; // dropset/fallo/biserie patterns aren't rule-evaluable yet
+}
+
+// Evaluates one exercise's most recent completed week against its rep range.
+// Returns {status, label, detail, weight} or null if not evaluable.
+function evaluateProgression(routineId, exId, week){
+  const r = ROUTINES.find(x=>x.id===routineId);
+  const ex = r.exercises.find(x=>x.id===exId);
+  if(!hasAnyData(routineId, exId, week)) return null;
+
+  const series = getSeries(routineId, exId, week);
+  const doneSets = series.filter(s=>s.done && s.reps!=="" && s.weight!=="");
+  if(!doneSets.length) return null;
+
+  if(ex.tags.includes("video")){
+    return {status:"video", label:"Revisar técnica", detail:"Marcado para revisión de video antes de cargar peso.", weight:null};
+  }
+
+  const range = parseRepsRange(ex.repsTarget);
+  if(!range){
+    // dropset / fallo / biserie — not rule-evaluable, just report fatigue if applicable
+    const reps = doneSets.map(s=>parseFloat(s.reps)||0);
+    if(reps.length>=2){
+      const drop = reps[0]-reps[reps.length-1];
+      if(drop>=4) return {status:"fatigue", label:"Revisar fatiga", detail:`Caída de ${drop} reps entre primera y última serie.`, weight:null};
+    }
+    return {status:"logged", label:"Registrado", detail:"Patrón dropset/biserie — sin regla de peso automática aún.", weight:null};
+  }
+
+  const reps = doneSets.map(s=>parseFloat(s.reps)||0);
+  const weights = doneSets.map(s=>parseFloat(s.weight)||0);
+  const maxW = Math.max(...weights);
+  const allAtTop = reps.every(rp=>rp>=range.max) && doneSets.length>=ex.series;
+  const allInRange = reps.every(rp=>rp>=range.min);
+  const drop = reps.length>=2 ? (reps[0]-reps[reps.length-1]) : 0;
+
+  if(drop>=4){
+    return {status:"fatigue", label:"Revisar fatiga", detail:`Caída de ${drop} reps entre serie 1 (${reps[0]}) y última (${reps[reps.length-1]}). Posible fatiga o descanso insuficiente.`, weight:maxW};
+  }
+  if(allAtTop){
+    const next = Math.round((maxW+2.5)*2)/2;
+    return {status:"up", label:"Subir peso", detail:`Todas las series llegaron al rango alto (${range.max} reps). Siguiente sesión: ${next} kg.`, weight:next};
+  }
+  if(allInRange){
+    return {status:"hold", label:"Mantener peso", detail:`Dentro del rango (${range.min}-${range.max}) pero sin llegar al tope en todas las series. Mantener ${maxW} kg.`, weight:maxW};
+  }
+  return {status:"review", label:"Revisar carga", detail:`Reps por debajo del rango objetivo (${range.min}-${range.max}). Considerar bajar peso o ajustar técnica.`, weight:maxW};
+}
+
+// Returns the most recent week (<=upTo) that has any logged data for this exercise
+function lastLoggedWeek(routineId, exId, upTo){
+  for(let w=upTo; w>=1; w--){
+    if(hasAnyData(routineId, exId, w)) return w;
+  }
+  return null;
+}
+
+// Aggregates progression evaluations for every exercise in a routine, using each
+// exercise's own most recently logged week (not necessarily currentWeek).
+function routineProgressionReport(routineId){
+  const r = ROUTINES.find(x=>x.id===routineId);
+  return r.exercises.map(ex=>{
+    const w = lastLoggedWeek(routineId, ex.id, WEEKS);
+    if(!w) return {ex, week:null, eval:null};
+    return {ex, week:w, eval:evaluateProgression(routineId, ex.id, w)};
+  });
+}
+
+// ─── COACH ALERTS (v3, pantalla 5) ─────────────────────────────────────────
+// Builds a flat list of alerts across all routines: progression-ready, fatigue,
+// video-pending, and weekly cardio status. Sorted by severity.
+function buildCoachAlerts(){
+  const alerts = [];
+  const severityOrder = {fatigue:0, video:0, review:1, up:2, hold:3, logged:4};
+
+  ROUTINES.forEach(r=>{
+    r.exercises.forEach(ex=>{
+      const w = lastLoggedWeek(r.id, ex.id, WEEKS);
+      if(!w) return;
+      const ev = evaluateProgression(r.id, ex.id, w);
+      if(!ev) return;
+      alerts.push({
+        routine:r, ex, week:w, eval:ev,
+        severity: severityOrder[ev.status] ?? 9
+      });
+    });
+  });
+
+  alerts.sort((a,b)=>a.severity-b.severity);
+  return alerts;
+}
+
+function alertBadgeClass(status){
+  if(status==="fatigue"||status==="video") return "purple";
+  if(status==="review") return "red";
+  if(status==="up") return "green";
+  if(status==="hold") return "blue";
+  return "yellow";
+}
+function alertIcon(status){
+  if(status==="fatigue") return "⚠️";
+  if(status==="video") return "📹";
+  if(status==="review") return "🔍";
+  if(status==="up") return "📈";
+  if(status==="hold") return "✓";
+  return "•";
+}
+
+// ─── HOME / "HOY" (v3, pantalla 1) ─────────────────────────────────────────
+// Rotation order mirrors the routine list (Leg, Push, Pull, Leg2, Upper),
+// derived from which routine has the least progress this week — i.e. "next
+// routine to train" is whichever isn't yet complete, in declared order.
+function suggestedRoutineToday(){
+  for(const r of ROUTINES){
+    const st = routineStats(r.id, currentWeek);
+    if(st.pct < 100) return r;
+  }
+  return ROUTINES[0]; // all done — show first as reference
+}
+
+function renderHome(){
+  const sv = document.getElementById("summaryView");
+  const suggested = suggestedRoutineToday();
+  let r = ROUTINES.find(x=>x.id===currentRoutine) || suggested;
+  const st = routineStats(r.id, currentWeek);
+  const alerts = buildCoachAlerts();
+  const urgentAlerts = alerts.filter(a=>a.eval.status==="fatigue"||a.eval.status==="video"||a.eval.status==="review").slice(0,3);
+
+  // status label
+  let statusLabel, statusClass;
+  if(st.pct===0){ statusLabel="Sin iniciar"; statusClass="blue"; }
+  else if(st.pct<100){ statusLabel="En curso"; statusClass="yellow"; }
+  else { statusLabel="Completa"; statusClass="green"; }
+
+  const report = routineProgressionReport(r.id);
+  const readyUp = report.filter(x=>x.eval && x.eval.status==="up").length;
+
+  sv.innerHTML = `<div class="sum-view">
+    <div class="sum-card" style="border-color:rgba(47,125,246,.35);">
+      <div class="sum-card-title">${r.emoji} Hoy: ${r.name}
+        <span class="badge ${statusClass}" style="margin-left:auto;">${statusLabel}</span>
+      </div>
+      <div class="sum-card-sub">Elige libremente la rutina de hoy. Sugerida por avance semanal: <b style="color:var(--text)">${suggested.emoji} ${suggested.name}</b>.</div>
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;">
+        ${ROUTINES.map(rt=>{
+          const s = routineStats(rt.id, currentWeek);
+          const active = rt.id===r.id;
+          return `<button class="wbtn${active?" active":""}" style="flex-shrink:0;padding:8px 10px;" onclick="selectHomeRoutine('${rt.id}')">${rt.emoji} ${rt.name}${s.pct>0?` ${s.pct}%`:""}</button>`;
+        }).join("")}
+      </div>
+      <div class="sum-card-sub">${r.note}</div>
+      <div class="rp-bar-bg" style="margin-top:8px;"><div class="rp-bar-fill" style="width:${st.pct}%"></div></div>
+      <div class="rp-meta" style="margin-top:4px;">
+        <span>${st.doneEx} / ${st.totalEx} ejercicios</span>
+        <span>Semana ${currentWeek} de ${WEEKS}</span>
+      </div>
+      <button class="finish-btn" style="margin-top:14px;" onclick="goToRoutine('${r.id}')">
+        Empezar ${r.name}
+      </button>
+    </div>
+
+    <div class="sum-card">
+      <div class="sum-card-title">📋 Resumen rápido</div>
+      <div class="sum-card-sub">Estado de las rutinas esta semana</div>
+      ${ROUTINES.map(rt=>{
+        const s = routineStats(rt.id, currentWeek);
+        const cls = s.pct===100?"green":s.pct>0?"yellow":"";
+        return `<div class="ex-sum-row" onclick="selectHomeRoutine('${rt.id}')" style="cursor:pointer;">
+          <div class="ex-sum-name">${rt.emoji} ${rt.name}</div>
+          <div class="ex-sum-meta">
+            <div class="ex-sum-val ${cls==="green"?"trend-up":cls==="yellow"?"trend-same":""}">${s.pct}%</div>
+            <div class="ex-sum-sub">${s.doneSeries}/${s.totalSeries} series</div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <div class="sum-card">
+      <div class="sum-card-title">⚖️ Unidad de carga</div>
+      <div class="sum-card-sub">Modo actual: <b style="color:var(--text)">${weightUnit.toUpperCase()}</b>. Si capturas en lb, GymComm convierte y guarda automáticamente en kg.</div>
+      <div style="display:flex;gap:8px;">
+        <button class="wbtn${weightUnit==="kg"?" active":""}" style="flex:1;padding:10px;" onclick="setWeightUnit('kg')">kg</button>
+        <button class="wbtn${weightUnit==="lb"?" active":""}" style="flex:1;padding:10px;" onclick="setWeightUnit('lb')">lb → kg</button>
+      </div>
+    </div>
+
+    ${readyUp>0?`<div class="sum-card" style="border-color:rgba(50,215,75,.4);">
+      <div class="sum-card-title">📈 Listos para subir peso</div>
+      <div class="sum-card-sub">${readyUp} ejercicio${readyUp>1?"s":""} en ${r.name} listo${readyUp>1?"s":""} para más carga. Revisa la pestaña Coach para detalle.</div>
+    </div>`:""}
+
+    ${urgentAlerts.length?`<div class="sum-card" style="border-color:rgba(191,90,242,.35);">
+      <div class="sum-card-title">🧭 Atención esta semana</div>
+      <div class="sum-card-sub">Lo más urgente entre todas las rutinas</div>
+      ${urgentAlerts.map(a=>`
+        <div class="ex-sum-row">
+          <div class="ex-sum-name">${alertIcon(a.eval.status)} ${a.ex.name}
+            <div style="font-size:10px;color:var(--soft);margin-top:2px;">${a.routine.name} · S${a.week}</div>
+          </div>
+          <div class="badge ${alertBadgeClass(a.eval.status)}">${a.eval.label}</div>
+        </div>`).join("")}
+    </div>`:""}
+
+    <div style="padding-bottom:24px;"></div>
+  </div>`;
+}
+
+function selectHomeRoutine(routineId){
+  currentRoutine = routineId;
+  state.currentRoutine = routineId;
+  save();
+  renderAll();
+}
+
+function goToRoutine(routineId){
+  showingHome=false; showingSummary=false; showingCoach=false; showingHistory=false;
+  currentRoutine=routineId;
+  state.currentRoutine=routineId;
+  save();
+  renderAll();
+}
+
+// ─── COACH VIEW (v3, pantalla 6) ───────────────────────────────────────────
+function renderCoach(){
+  const sv = document.getElementById("summaryView");
+  const alerts = buildCoachAlerts();
+
+  const groups = {
+    fatigue: alerts.filter(a=>a.eval.status==="fatigue"),
+    video: alerts.filter(a=>a.eval.status==="video"),
+    review: alerts.filter(a=>a.eval.status==="review"),
+    up: alerts.filter(a=>a.eval.status==="up"),
+    hold: alerts.filter(a=>a.eval.status==="hold"),
+  };
+
+  function section(title, sub, list){
+    if(!list.length) return "";
+    return `<div class="sum-card">
+      <div class="sum-card-title">${title}</div>
+      <div class="sum-card-sub">${sub}</div>
+      ${list.map(a=>`
+        <div class="ex-sum-row">
+          <div class="ex-sum-name">${a.ex.name}
+            <div style="font-size:10px;color:var(--soft);margin-top:2px;">${a.routine.emoji} ${a.routine.name} · Semana ${a.week}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;">${a.eval.detail}</div>
+          </div>
+        </div>`).join("")}
+    </div>`;
+  }
+
+  const totalLogged = ROUTINES.reduce((sum,r)=>sum+routineStats(r.id,currentWeek).doneSeries,0);
+
+  sv.innerHTML = `<div class="sum-view">
+    <div class="sum-card">
+      <div class="sum-card-title">🧭 Ángel</div>
+      <div class="sum-card-sub">${totalLogged} series registradas esta semana · ${alerts.length} ejercicios con evaluación de progresión</div>
+    </div>
+    ${section("⚠️ Revisar fatiga", "Caída fuerte de reps entre primera y última serie", groups.fatigue)}
+    ${section("📹 Requiere video", "Ejercicios marcados para revisión técnica antes de cargar peso", groups.video)}
+    ${section("🔍 Revisar carga", "Reps por debajo del rango objetivo", groups.review)}
+    ${section("📈 Listos para subir peso", "Todas las series llegaron al rango alto de reps", groups.up)}
+    ${section("✓ Mantener peso", "Dentro del rango, sin llegar al tope", groups.hold)}
+    ${!alerts.length?`<div class="sum-card"><div style="color:var(--soft);font-size:12px;text-align:center;padding:20px 0;">Aún no hay series registradas para evaluar.</div></div>`:""}
+    <div style="padding-bottom:24px;"></div>
+  </div>`;
+}
+
+// ─── EXERCISE HISTORY (v3, pantalla 4) ─────────────────────────────────────
+let historyTarget = null; // {routineId, exId}
+
+function openExerciseHistory(routineId, exId){
+  historyTarget = {routineId, exId};
+  showingHome=false; showingCoach=false; showingSummary=true; // reuse summaryView container
+  showingHistory=true;
+  renderAll();
+}
+function closeExerciseHistory(){
+  showingHistory=false;
+  renderAll();
+}
+
+let showingHistory = false;
+
+function renderExerciseHistory(){
+  const sv = document.getElementById("summaryView");
+  const {routineId, exId} = historyTarget;
+  const r = ROUTINES.find(x=>x.id===routineId);
+  const ex = r.exercises.find(x=>x.id===exId);
+
+  const weekRows = [];
+  for(let w=1; w<=WEEKS; w++){
+    if(!hasAnyData(routineId, exId, w)) continue;
+    const series = getSeries(routineId, exId, w);
+    const setStr = series.map(s=>s.done?(s.reps||"—"):null).filter(Boolean).join("/");
+    const maxW = exMaxWeight(routineId, exId, w);
+    const ev = evaluateProgression(routineId, exId, w);
+    weekRows.push({week:w, maxW, setStr, ev});
+  }
+
+  const last = weekRows[weekRows.length-1];
+
+  sv.innerHTML = `<div class="sum-view">
+    <button class="wbtn" style="margin-bottom:12px;" onclick="closeExerciseHistory()">← Volver al resumen</button>
+    <div class="sum-card">
+      <div class="sum-card-title">${ex.name}</div>
+      <div class="sum-card-sub">${r.emoji} ${r.name} · Objetivo ${ex.repsTarget}${ex.weightRef?` · Ref. inicial ${ex.weightRef}kg`:""}</div>
+      ${weekRows.length?weekRows.map(row=>`
+        <div class="ex-sum-row">
+          <div class="ex-sum-name">Semana ${row.week}: ${row.maxW>0?displayWeightValue(row.maxW)+" "+weightUnit+" ("+row.maxW+" kg)":"—"} · ${row.setStr||"—"}</div>
+          <div class="ex-sum-meta">
+            ${row.ev?`<div class="badge ${alertBadgeClass(row.ev.status)}">${row.ev.label}</div>`:""}
+          </div>
+        </div>`).join(""):`<div style="color:var(--soft);font-size:12px;text-align:center;padding:16px 0;">Sin datos registrados aún.</div>`}
+      ${last && last.ev ? `<div class="prev-ref" style="margin-top:12px;">
+        <div class="prev-ref-title">Siguiente recomendación</div>
+        ${last.ev.detail}
+      </div>` : ""}
+    </div>
+    <div style="padding-bottom:24px;"></div>
+  </div>`;
+}
+
+function toast(msg, red=false){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.className="toast show"+(red?" red":"");
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.className="toast",2000);
+}
+
+// ─── RENDER WEEK BUTTONS ──────────────────────────────────────────────────
+function renderWeekBtns(){
+  const wrap = document.getElementById("weekBtns");
+  wrap.innerHTML="";
+  for(let w=1;w<=WEEKS;w++){
+    const b=document.createElement("button");
+    b.className="wbtn"+(w===currentWeek?" active":"");
+    b.textContent="S"+w;
+    b.onclick=()=>{ currentWeek=w; state.currentWeek=w; save(); renderAll(); };
+    wrap.appendChild(b);
+  }
+}
+
+// ─── RENDER ROUTINE NAV ───────────────────────────────────────────────────
+let showingSummary = false;
+let showingHome = true;   // v3: app opens on "Hoy" by default
+let showingCoach = false;
+
+function renderRoutineNav(){
+  const nav=document.getElementById("routineNav");
+  nav.innerHTML="";
+
+  // Hoy tab (first)
+  const hb=document.createElement("button");
+  hb.className="rnav-btn"+(showingHome?" active":"");
+  hb.textContent="🏠 Hoy";
+  hb.onclick=()=>{ showingHome=true; showingSummary=false; showingCoach=false; showingHistory=false; renderAll(); };
+  nav.appendChild(hb);
+
+  ROUTINES.forEach(r=>{
+    const b=document.createElement("button");
+    b.className="rnav-btn"+(!showingHome && !showingCoach && !showingSummary && r.id===currentRoutine?" active":"");
+    const stats=routineStats(r.id,currentWeek);
+    b.textContent=r.emoji+" "+r.name+(stats.pct>0?" "+stats.pct+"%":"");
+    b.onclick=()=>{
+      showingHome=false; showingSummary=false; showingCoach=false; showingHistory=false;
+      currentRoutine=r.id;
+      state.currentRoutine=r.id;
+      save();
+      renderAll();
+    };
+    nav.appendChild(b);
+  });
+
+  // Coach tab
+  const cb=document.createElement("button");
+  cb.className="rnav-btn"+(showingCoach?" active":"");
+  const alerts = buildCoachAlerts();
+  cb.textContent="🧭 Coach"+(alerts.length?" "+alerts.length:"");
+  cb.onclick=()=>{ showingCoach=true; showingHome=false; showingSummary=false; showingHistory=false; renderAll(); };
+  nav.appendChild(cb);
+
+  // Resumen tab
+  const sb=document.createElement("button");
+  sb.className="rnav-btn"+(showingSummary?" active":"");
+  sb.textContent="📊 Resumen";
+  sb.onclick=()=>{ showingSummary=true; showingHome=false; showingCoach=false; showingHistory=false; renderAll(); };
+  nav.appendChild(sb);
+}
+
+// ─── RENDER HEADER KPIS ───────────────────────────────────────────────────
+function renderHdr(){
+  const st=routineStats(currentRoutine,currentWeek);
+  document.getElementById("hkpiEx").textContent =
+    st.doneEx>0 ? st.doneEx+"/"+st.totalEx : "–";
+  document.getElementById("hkpiSer").textContent =
+    st.doneSeries>0 ? st.doneSeries+"/"+st.totalSeries : "–";
+  document.getElementById("hkpiVol").textContent =
+    st.totalVol>0 ? st.totalVol.toLocaleString() : "–";
+  document.getElementById("hkpiAdh").textContent =
+    st.pct>0 ? st.pct+"%" : "–";
+}
+
+// ─── RENDER MAIN CONTENT ─────────────────────────────────────────────────
+function renderContent(){
+  const r = ROUTINES.find(x=>x.id===currentRoutine);
+  const st = routineStats(currentRoutine, currentWeek);
+  const content = document.getElementById("mainContent");
+
+  let html = `
+  <div class="routine-hdr">
+    <div class="routine-hdr-name">${r.emoji} ${r.name}
+      <span class="badge ${st.pct===100?"green":"blue"}">${st.pct===100?"✓ Completa":st.pct+"%"}</span>
+    </div>
+    <div class="routine-hdr-note">${r.note}</div>
+    <div class="routine-progress">
+      <div class="rp-bar-bg"><div class="rp-bar-fill" style="width:${st.pct}%"></div></div>
+      <div class="rp-meta">
+        <span>${st.doneSeries} / ${st.totalSeries} series</span>
+        <span>${st.totalVol>0?st.totalVol.toLocaleString()+" kg vol":""}</span>
+      </div>
+    </div>
+  </div>`;
+
+  // Group biseries
+  let biseriePairs = {};
+  r.exercises.forEach(ex=>{
+    ex.tags.forEach(t=>{
+      if(t.startsWith("biserie-")){
+        const pair = ex.tags.find(x=>x.startsWith("biserie-")).replace("biserie-","");
+        if(!biseriePairs[pair]) biseriePairs[pair]=[];
+        biseriePairs[pair].push(ex.id);
+      }
+    });
+  });
+
+  r.exercises.forEach((ex, idx)=>{
+    const series = getSeries(currentRoutine, ex.id, currentWeek);
+    const prevSeries = getPrevSeries(currentRoutine, ex.id, currentWeek);
+    const doneSeries = series.filter(s=>s.done).length;
+    const allDone = doneSeries===ex.series;
+    const isDropset = ex.tags.includes("dropset");
+    const isBiserieA = ex.tags.includes("biserie-a");
+    const isBiserieB = ex.tags.includes("biserie-b");
+    const isVideo = ex.tags.includes("video");
+
+    let cardClass = "ex-card";
+    if(allDone) cardClass += " all-done";
+    if(isVideo) cardClass += " has-purple";
+
+    // dots
+    const dots = Array.from({length:ex.series},(_,i)=>{
+      const s=series[i]||{};
+      const cls = s.done?"done":(s.reps||s.weight?"partial":"");
+      return `<div class="dot ${cls}"></div>`;
+    }).join("");
+
+    // tags display
+    let tagHtml = `<span class="badge">${ex.repsTarget}</span>`;
+    if(ex.musculo) tagHtml += `<span class="badge" style="background:rgba(191,90,242,.15);color:#bf5af2;">${ex.musculo}</span>`;
+    if(ex.bloque && ex.bloque!=="Principal") tagHtml += `<span class="badge" style="background:rgba(255,255,255,.06);color:var(--soft);">${ex.bloque}</span>`;
+    if(ex.weightRef) tagHtml += `<span class="badge blue">${ex.weightRef} kg ref</span>`;
+    if(isDropset) tagHtml += `<span class="badge yellow">Dropset</span>`;
+    if(isBiserieA) tagHtml += `<span class="badge blue">Biserie A</span>`;
+    if(isBiserieB) tagHtml += `<span class="badge blue">Biserie B</span>`;
+    if(isVideo) tagHtml += `<span class="badge purple">📹 Ver video</span>`;
+    if(allDone) tagHtml += `<span class="badge green">✓</span>`;
+
+    // biserie divider
+    let divider = "";
+    if(isBiserieA) divider = `<div class="section-divider"><span>Biserie — van seguidos sin descanso</span></div>`;
+    if(isBiserieB && idx>0 && r.exercises[idx-1].tags.includes("biserie-a"))
+      divider = ""; // no extra divider between A and B
+
+    html += `${divider}
+    <div class="${cardClass}" id="ex-${ex.id}">
+      <div class="ex-header" onclick="toggleEx('${ex.id}')">
+        <div class="ex-header-row">
+          <div class="ex-num">${idx+1}</div>
+          <div class="ex-name">${ex.name}</div>
+        </div>
+        <div class="ex-badge-row">${tagHtml}</div>
+        <div class="ex-progress-dots">${dots}</div>
+      </div>
+      <div class="ex-body" id="body-${ex.id}">`;
+
+    // prev week ref
+    if(prevSeries && prevSeries.some(s=>s.done)){
+      const prevLines = prevSeries.map((s,i)=>{
+        if(!s.done) return null;
+        return `S${i+1}: ${displayWeightValue(s.weight)||"—"}${weightUnit} (${s.weight||"—"}kg) × ${s.reps||"—"}`;
+      }).filter(Boolean).join("  ·  ");
+      html += `<div class="prev-ref">
+        <div class="prev-ref-title">Semana ${currentWeek-1} — referencia</div>
+        ${prevLines}
+      </div>`;
+    }
+
+    // series table
+    html += `<table class="series-table">
+      <tr>
+        <th style="text-align:left">Serie</th>
+        <th>Peso (${weightUnit})</th>
+        <th>Reps</th>
+        <th></th>
+      </tr>`;
+
+    for(let si=0; si<ex.series; si++){
+      const s = series[si]||{weight:"",reps:"",done:false};
+      const prevS = prevSeries && prevSeries[si] ? prevSeries[si] : null;
+      const rowCls = s.done ? "series-row done-row" : "series-row";
+      const inputCls = s.weight||s.reps ? "series-input filled" : "series-input";
+      const chkCls = s.done ? "done-chk checked" : "done-chk";
+
+      // Target hint
+      let hint = "";
+      if(prevS && prevS.reps && prevS.weight){
+        hint = `<div class="target-hint">ant: ${prevS.weight}kg×${prevS.reps}</div>`;
+      }
+
+      html += `<tr class="${rowCls}" id="row-${ex.id}-${si}">
+        <td class="series-num">S${si+1}</td>
+        <td class="series-cell">
+          <input class="${inputCls}" id="w-${ex.id}-${si}"
+            type="number" inputmode="decimal" placeholder="${weightPlaceholder(ex.weightRef)}"
+            value="${displayWeightValue(s.weight)}"
+            oninput="updateSeries('${currentRoutine}','${ex.id}',${si},'weight',this.value)">
+          ${weightHint(s.weight)}
+          ${hint}
+        </td>
+        <td class="series-cell">
+          <input class="${inputCls}" id="r-${ex.id}-${si}"
+            type="number" inputmode="numeric" placeholder="reps"
+            value="${s.reps||""}"
+            oninput="updateSeries('${currentRoutine}','${ex.id}',${si},'reps',this.value)">
+        </td>
+        <td class="done-toggle">
+          <div class="${chkCls}" id="chk-${ex.id}-${si}"
+            onclick="toggleSeriesDone('${currentRoutine}','${ex.id}',${si})">
+            ${s.done?"✓":""}
+          </div>
+        </td>
+      </tr>`;
+    }
+
+    html += `</table>`;
+
+    // Notes
+    const noteKey = `note_${currentRoutine}_${ex.id}_w${currentWeek}`;
+    const noteVal = state[noteKey]||"";
+    if(ex.note){
+      html += `<div style="margin-top:8px;padding:7px 10px;background:rgba(191,90,242,.08);
+        border:1px solid rgba(191,90,242,.2);border-radius:8px;font-size:11px;color:var(--muted);">
+        ${ex.note}</div>`;
+    }
+    html += `<div class="ex-notes" style="margin-top:8px;">
+      <div class="ex-notes-label">Notas</div>
+      <textarea placeholder="Observaciones, sensaciones, ajustes..."
+        onchange="updateNote('${currentRoutine}','${ex.id}',${currentWeek},this.value)">${noteVal}</textarea>
+    </div>`;
+
+    html += `</div></div>`; // close ex-body and ex-card
+  });
+
+  // Session notes + finish
+  const sessionNoteKey = `note_${currentRoutine}_w${currentWeek}`;
+  html += `
+  <div class="section-divider"><span>Sesión</span></div>
+  <div class="ex-card" style="padding:14px;">
+    <div class="ex-notes-label">Comentarios de la sesión</div>
+    <textarea style="width:100%;background:var(--card2);border:1px solid var(--line);
+      color:var(--text);border-radius:10px;padding:9px 10px;font-size:12px;
+      font-family:inherit;resize:none;min-height:70px;outline:none;margin-top:6px;"
+      placeholder="¿Cómo te sentiste? ¿Ajustes para la próxima semana?"
+      onchange="updateSessionNote('${currentRoutine}',${currentWeek},this.value)">${state[sessionNoteKey]||""}</textarea>
+  </div>
+  <button class="finish-btn" onclick="finishSession()" id="finishBtn">
+    Cerrar sesión ${r.name} S${currentWeek}
+  </button>
+  <button class="wbtn" style="width:100%;padding:11px;margin-top:0;text-align:center;"
+    onclick="exportSessionCSV('${currentRoutine}',${currentWeek})">
+    📤 Exportar sesión (CSV)
+  </button>
+  `;
+
+  content.innerHTML = html;
+
+  // Auto-open first incomplete exercise
+  const firstIncomplete = r.exercises.find(ex=>{
+    const s=getSeries(currentRoutine,ex.id,currentWeek);
+    return s.filter(x=>x.done).length < ex.series;
+  });
+  if(firstIncomplete){
+    const body=document.getElementById("body-"+firstIncomplete.id);
+    if(body) body.classList.add("open");
+  }
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────────
+function toggleEx(exId){
+  const body=document.getElementById("body-"+exId);
+  if(body) body.classList.toggle("open");
+}
+
+function updateSeries(routineId, exId, si, field, val){
+  const s=getSeries(routineId,exId,currentWeek);
+  if(!s[si]) s[si]={weight:"",reps:"",done:false};
+  s[si][field]= field === "weight" ? inputWeightToKg(val) : val;
+  const k=seriesKey(routineId,exId,currentWeek);
+  state[k]=s;
+  save();
+  // visual: fill border
+  const inp=document.getElementById((field==="weight"?"w":"r")+"-"+exId+"-"+si);
+  if(inp){
+    inp.className=val?"series-input filled":"series-input";
+  }
+  renderHdr();
+  renderRoutineNav();
+  updateDots(routineId,exId);
+}
+
+function toggleSeriesDone(routineId, exId, si){
+  const s=getSeries(routineId,exId,currentWeek);
+  if(!s[si]) s[si]={weight:"",reps:"",done:false};
+  s[si].done=!s[si].done;
+  const k=seriesKey(routineId,exId,currentWeek);
+  state[k]=s;
+  save();
+  // update chk button
+  const chk=document.getElementById("chk-"+exId+"-"+si);
+  if(chk){
+    chk.className=s[si].done?"done-chk checked":"done-chk";
+    chk.textContent=s[si].done?"✓":"";
+  }
+  // update row
+  const row=document.getElementById("row-"+exId+"-"+si);
+  if(row) row.className=s[si].done?"series-row done-row":"series-row";
+  if(s[si].done) toast("✓ Serie "+(si+1)+" completada");
+  updateDots(routineId,exId);
+  renderHdr();
+  renderRoutineNav();
+  // check if all done
+  const r=ROUTINES.find(x=>x.id===routineId);
+  const ex=r.exercises.find(x=>x.id===exId);
+  const allDone=s.filter(x=>x.done).length===ex.series;
+  const card=document.getElementById("ex-"+exId);
+  if(card){
+    if(allDone){ card.classList.add("all-done"); }
+    else { card.classList.remove("all-done"); }
+  }
+}
+
+function updateDots(routineId, exId){
+  const r=ROUTINES.find(x=>x.id===routineId);
+  const ex=r.exercises.find(x=>x.id===exId);
+  const s=getSeries(routineId,exId,currentWeek);
+  const card=document.getElementById("ex-"+exId);
+  if(!card) return;
+  const dots=card.querySelectorAll(".dot");
+  dots.forEach((d,i)=>{
+    const sr=s[i]||{};
+    d.className="dot"+(sr.done?" done":(sr.reps||sr.weight?" partial":""));
+  });
+}
+
+function updateNote(routineId, exId, week, val){
+  state[`note_${routineId}_${exId}_w${week}`]=val;
+  save();
+}
+
+function updateSessionNote(routineId, week, val){
+  state[`note_${routineId}_w${week}`]=val;
+  save();
+}
+
+function finishSession(){
+  const st=routineStats(currentRoutine,currentWeek);
+  const r=ROUTINES.find(x=>x.id===currentRoutine);
+  toast(`${r.emoji} ${r.name} S${currentWeek} cerrada · ${st.pct}% · ${st.totalVol.toLocaleString()} kg vol`);
+  // Auto-advance week if all done
+  if(st.pct===100 && currentWeek<WEEKS){
+    setTimeout(()=>{
+      if(confirm(`Sesión 100% completa. ¿Avanzar a Semana ${currentWeek+1}?`)){
+        currentWeek++;
+        state.currentWeek=currentWeek;
+        save();
+        renderAll();
+      }
+    },500);
+  }
+}
+
+// ─── EXPORT SESSION CSV (v3, pantalla 7) ───────────────────────────────────
+// Mirrors the "series_registradas" sheet shape from the plan:
+// session_id, user_id, fecha, dia, ejercicio, serie, peso, reps, rpe, nota
+function exportSessionCSV(routineId, week){
+  const r = ROUTINES.find(x=>x.id===routineId);
+  const today = new Date().toISOString().slice(0,10);
+  const sessionId = `angel_${today.replace(/-/g,"_")}_${routineId}`;
+  const rows = [["session_id","user_id","fecha","dia","ejercicio","serie","peso","reps","rpe","nota"]];
+
+  r.exercises.forEach(ex=>{
+    const series = getSeries(routineId, ex.id, week);
+    const noteKey = `note_${routineId}_${ex.id}_w${week}`;
+    const note = (state[noteKey]||"").replace(/"/g,"'");
+    series.forEach((s,i)=>{
+      if(!s.done && !s.weight && !s.reps) return;
+      rows.push([sessionId,"angel",today,r.name,ex.name,i+1,s.weight||"",s.reps||"","",note]);
+    });
+  });
+
+  const csv = rows.map(row=>row.map(cell=>{
+    const c = String(cell);
+    return /[,"\n]/.test(c) ? `"${c.replace(/"/g,'""')}"` : c;
+  }).join(",")).join("\n");
+
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${sessionId}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("✓ Sesión exportada como CSV");
+}
+
+// ─── SUMMARY ENGINE ───────────────────────────────────────────────────────
+let sumRoutine = "leg"; // which routine the summary is showing
+
+function exBestSet(routineId, exId, week){
+  // Best set = highest weight × reps (1RM proxy: w × reps / 30 + w)
+  const s = getSeries(routineId, exId, week);
+  let best = null, bestScore = -1;
+  s.forEach(sr=>{
+    if(!sr.done) return;
+    const w=parseFloat(sr.weight)||0;
+    const r=parseFloat(sr.reps)||0;
+    const score = w*(1 + r/30); // Epley estimate
+    if(score>bestScore){ bestScore=score; best=sr; }
+  });
+  return best;
+}
+
+function exVolume(routineId, exId, week){
+  const s = getSeries(routineId, exId, week);
+  return s.reduce((sum,sr)=>{
+    if(!sr.done) return sum;
+    return sum + (parseFloat(sr.weight)||0)*(parseFloat(sr.reps)||0);
+  }, 0);
+}
+
+function exMaxWeight(routineId, exId, week){
+  const s = getSeries(routineId, exId, week);
+  return s.reduce((mx,sr)=>{
+    if(!sr.done) return mx;
+    return Math.max(mx, parseFloat(sr.weight)||0);
+  }, 0);
+}
+
+function exAvgReps(routineId, exId, week){
+  const s = getSeries(routineId, exId, week);
+  const done = s.filter(sr=>sr.done && sr.reps);
+  if(!done.length) return 0;
+  return Math.round(done.reduce((sum,sr)=>sum+(parseFloat(sr.reps)||0),0)/done.length);
+}
+
+function hasAnyData(routineId, exId, week){
+  const s = getSeries(routineId, exId, week);
+  return s.some(sr=>sr.done || sr.weight || sr.reps);
+}
+
+function weekVolume(routineId, week){
+  const r=ROUTINES.find(x=>x.id===routineId);
+  return Math.round(r.exercises.reduce((sum,ex)=>sum+exVolume(routineId,ex.id,week),0));
+}
+
+function renderSummary(){
+  const sv = document.getElementById("summaryView");
+  const r  = ROUTINES.find(x=>x.id===sumRoutine);
+
+  // Build sub-tabs (one per routine)
+  let tabsHtml = ROUTINES.map(rt=>{
+    const hasData = rt.exercises.some(ex=>{
+      for(let w=1;w<=WEEKS;w++) if(hasAnyData(rt.id,ex.id,w)) return true;
+      return false;
+    });
+    return `<div class="sum-tab${rt.id===sumRoutine?" active":""}"
+      onclick="sumRoutine='${rt.id}';renderSummary()">
+      ${rt.emoji} ${rt.name}${hasData?" ✓":""}
+    </div>`;
+  }).join("");
+
+  // ── VOLUME PROGRESSION TABLE ──────────────────────────────────────────
+  let volRows = "";
+  const volByWeek = Array.from({length:WEEKS},(_,i)=>weekVolume(r.id,i+1));
+  const maxVol = Math.max(...volByWeek, 1);
+
+  // spark bars
+  const sparkBars = volByWeek.map((v,i)=>{
+    const pct = Math.round((v/maxVol)*100)||2;
+    const col = v===maxVol&&v>0 ? "var(--green)" : v>0 ? "var(--blue)" : "var(--line)";
+    return `<div class="spark-bar" style="height:${pct}%;background:${col};"></div>`;
+  }).join("");
+  const sparkLabels = volByWeek.map((v,i)=>`<div class="spark-lbl">S${i+1}${v>0?"<br/>"+Math.round(v/1000*10)/10+"k":""}</div>`).join("");
+
+  // ── PER-EXERCISE ANALYSIS ──────────────────────────────────────────────
+  let exRows = "";
+  r.exercises.forEach(ex=>{
+    // find weeks with data
+    const weeksWithData = [];
+    for(let w=1;w<=WEEKS;w++){
+      if(hasAnyData(r.id,ex.id,w)) weeksWithData.push(w);
+    }
+    if(!weeksWithData.length) return;
+
+    const lastW   = weeksWithData[weeksWithData.length-1];
+    const firstW  = weeksWithData[0];
+    const currMax = exMaxWeight(r.id,ex.id,lastW);
+    const prevMax = lastW>firstW ? exMaxWeight(r.id,ex.id,lastW-1) : 0;
+    const currVol = exVolume(r.id,ex.id,lastW);
+    const avgReps = exAvgReps(r.id,ex.id,lastW);
+
+    let trend="", trendClass="", rec="";
+    if(prevMax>0&&currMax>0){
+      const diff=currMax-prevMax;
+      if(diff>0){ trend=`+${diff}kg`; trendClass="trend-up"; rec=`Mantener ${currMax}kg o intentar ${currMax+2.5}kg`; }
+      else if(diff<0){ trend=`${diff}kg`; trendClass="trend-down"; rec=`Revisar técnica antes de subir carga`; }
+      else { trend="="; trendClass="trend-same"; rec=`Subir 2.5kg si reps llegaron al tope`; }
+    } else {
+      trend="Nuevo"; trendClass="trend-new";
+      rec=`Referencia inicial: ${currMax||"—"}kg`;
+    }
+
+    // mini week-by-week pills
+    const pills = Array.from({length:WEEKS},(_,i)=>{
+      const w=i+1;
+      const mx=exMaxWeight(r.id,ex.id,w);
+      const vl=exVolume(r.id,ex.id,w);
+      if(!hasAnyData(r.id,ex.id,w)) return `<span style="color:var(--soft);font-size:10px;">S${w}: —</span>`;
+      return `<span style="color:${mx===currMax&&mx>0?"var(--green)":"var(--muted)"};font-size:10px;">S${w}: ${displayWeightValue(mx)||"?"}${weightUnit}</span>`;
+    }).join("<span style='color:var(--line)'> · </span>");
+
+    exRows += `
+    <div class="ex-sum-row" style="cursor:pointer;" onclick="openExerciseHistory('${r.id}','${ex.id}')">
+      <div class="ex-sum-name">
+        ${ex.name}
+        <div style="margin-top:4px;line-height:1.6;">${pills}</div>
+        <div style="font-size:10px;color:var(--blue);margin-top:4px;">→ ${rec}</div>
+      </div>
+      <div class="ex-sum-meta">
+        <div class="ex-sum-val ${trendClass}">${trend}</div>
+        <div class="ex-sum-sub">${currMax>0?displayWeightValue(currMax)+weightUnit+" max":""}</div>
+        <div class="ex-sum-sub">${currVol>0?currVol+"kg vol":""}</div>
+        <div class="ex-sum-sub">${avgReps>0?avgReps+" reps prom":""}</div>
+      </div>
+    </div>`;
+  });
+
+  // ── WEEK OVERVIEW TABLE ───────────────────────────────────────────────
+  let ovHead = `<tr><th>Ejercicio</th>${Array.from({length:WEEKS},(_,i)=>`<th>S${i+1}</th>`).join("")}</tr>`;
+  let ovRows = "";
+  r.exercises.forEach(ex=>{
+    const anyData = Array.from({length:WEEKS},(_,i)=>hasAnyData(r.id,ex.id,i+1));
+    if(!anyData.some(Boolean)) return;
+    const cells = Array.from({length:WEEKS},(_,i)=>{
+      const w=i+1;
+      const mx=exMaxWeight(r.id,ex.id,w);
+      const vol=exVolume(r.id,ex.id,w);
+      if(!hasAnyData(r.id,ex.id,w)) return `<td style="color:var(--soft)">—</td>`;
+      const isMax = mx===Math.max(...Array.from({length:WEEKS},(_,j)=>exMaxWeight(r.id,ex.id,j+1)));
+      return `<td style="color:${isMax&&mx>0?"var(--green)":"var(--text)"}">${mx>0?mx+"kg":"✓"}</td>`;
+    }).join("");
+    ovRows+=`<tr><td>${ex.name.length>18?ex.name.substring(0,17)+"…":ex.name}</td>${cells}</tr>`;
+  });
+
+  // ── EXPORT TEXT ───────────────────────────────────────────────────────
+  function buildExportText(){
+    const lines=[
+      `═══════════════════════════`,
+      `GYMCOMM · RESUMEN ${r.name.toUpperCase()}`,
+      `Ángel · Cut · ${new Date().toLocaleDateString("es-MX")}`,
+      `═══════════════════════════`,""
+    ];
+    r.exercises.forEach(ex=>{
+      const weeksWithData=[];
+      for(let w=1;w<=WEEKS;w++) if(hasAnyData(r.id,ex.id,w)) weeksWithData.push(w);
+      if(!weeksWithData.length) return;
+      lines.push(`── ${ex.name}`);
+      weeksWithData.forEach(w=>{
+        const s=getSeries(r.id,ex.id,w);
+        const serieLines=s.map((sr,i)=>sr.done?`  S${i+1}: ${sr.weight||"—"}kg × ${sr.reps||"—"} reps`:null).filter(Boolean);
+        if(serieLines.length){
+          lines.push(`  Semana ${w}:`);
+          serieLines.forEach(l=>lines.push(l));
+        }
+      });
+      const lastW=weeksWithData[weeksWithData.length-1];
+      const currMax=exMaxWeight(r.id,ex.id,lastW);
+      const firstW=weeksWithData[0];
+      const firstMax=exMaxWeight(r.id,ex.id,firstW);
+      if(currMax>0&&firstMax>0){
+        const delta=currMax-firstMax;
+        lines.push(`  Progresión: ${firstMax}kg → ${currMax}kg (${delta>=0?"+":""}${delta}kg)`);
+      }
+      lines.push("");
+    });
+    lines.push(`Volumen por semana:`);
+    for(let w=1;w<=WEEKS;w++){
+      const v=weekVolume(r.id,w);
+      if(v>0) lines.push(`  S${w}: ${v.toLocaleString()} kg`);
+    }
+    lines.push("");
+    // session notes
+    const hasNotes=Array.from({length:WEEKS},(_,i)=>state[`note_${r.id}_w${i+1}`]).some(Boolean);
+    if(hasNotes){
+      lines.push("Notas de sesión:");
+      for(let w=1;w<=WEEKS;w++){
+        const n=state[`note_${r.id}_w${w}`];
+        if(n) lines.push(`  S${w}: ${n}`);
+      }
+    }
+    return lines.join("\n");
+  }
+
+  sv.innerHTML = `<div class="sum-view">
+    <div class="sum-tabs">${tabsHtml}</div>
+
+    <!-- Volume progression -->
+    <div class="sum-card">
+      <div class="sum-card-title">📈 Volumen total · ${r.name}</div>
+      <div class="sum-card-sub">Kg totales levantados por semana (peso × reps de series completadas)</div>
+      <div class="spark-row">${sparkBars}</div>
+      <div class="spark-labels">${sparkLabels}</div>
+    </div>
+
+    <!-- Exercise progression -->
+    <div class="sum-card">
+      <div class="sum-card-title">💪 Progresión por ejercicio</div>
+      <div class="sum-card-sub">Comparativo semana a semana · Verde = mejor marca · → recomendación siguiente semana</div>
+      ${exRows || `<div style="color:var(--soft);font-size:12px;text-align:center;padding:20px 0;">Aún no hay datos registrados en ${r.name}.</div>`}
+    </div>
+
+    <!-- Overview table -->
+    <div class="sum-card">
+      <div class="sum-card-title">📋 Tabla de cargas</div>
+      <div class="sum-card-sub">Peso máximo usado por ejercicio cada semana</div>
+      <div style="overflow-x:auto;">
+        <table class="week-ov">${ovHead}${ovRows||`<tr><td colspan="${WEEKS+1}" style="color:var(--soft);text-align:center;padding:16px;">Sin datos aún.</td></tr>`}</table>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="sum-card">
+      <div class="sum-card-title">📤 Exportar resumen</div>
+      <div class="sum-card-sub">Copia el texto y mándalo a tu entrenador o guárdalo en Notas</div>
+      <textarea class="export-area" id="exportArea" readonly>${buildExportText()}</textarea>
+      <button class="copy-btn" onclick="copyExport()">📋 Copiar resumen completo</button>
+    </div>
+
+    <div style="padding-bottom:24px;"></div>
+  </div>`;
+}
+
+function copyExport(){
+  const area=document.getElementById("exportArea");
+  if(!area) return;
+  area.select();
+  navigator.clipboard.writeText(area.value)
+    .then(()=>toast("✓ Copiado — pégalo en WhatsApp o Notas"))
+    .catch(()=>{ document.execCommand("copy"); toast("✓ Copiado"); });
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────────────
+function renderAll(){
+  renderWeekBtns();
+  renderRoutineNav();
+  renderHdr();
+  const mc=document.getElementById("mainContent");
+  const sv=document.getElementById("summaryView");
+  if(showingHome){
+    mc.style.display="none";
+    sv.style.display="block";
+    renderHome();
+  } else if(showingCoach){
+    mc.style.display="none";
+    sv.style.display="block";
+    renderCoach();
+  } else if(showingSummary){
+    mc.style.display="none";
+    sv.style.display="block";
+    if(showingHistory && historyTarget){
+      renderExerciseHistory();
+    } else {
+      if(!sumRoutine) sumRoutine=currentRoutine;
+      renderSummary();
+    }
+  } else {
+    mc.style.display="block";
+    sv.style.display="none";
+    renderContent();
+  }
+}
+
+// ─── SETTINGS MODAL (v3) ───────────────────────────────────────────────────
+function openSettings(){
+  const url = localStorage.getItem(SHEET_KEY)||"";
+  document.getElementById("sheetUrlInput").value = url;
+  document.getElementById("sheetSaveMsg").style.display = "none";
+  document.getElementById("sheetStatusDetail").innerHTML =
+    `Fuente: <b style="color:var(--text)">${sheetStatus==="ok"?"Google Sheets ✓":sheetStatus==="error"?"Error al cargar Sheet":"Datos locales (sin Sheet configurada)"}</b><br>
+     Rutinas cargadas: <b style="color:var(--text)">${ROUTINES.length}</b><br>
+     Ejercicios totales: <b style="color:var(--text)">${ROUTINES.reduce((s,r)=>s+r.exercises.length,0)}</b><br>
+     URL guardada: <span style="word-break:break-all;">${url||"ninguna"}</span><br>
+     Unidad de carga: <b style="color:var(--text)">${weightUnit.toUpperCase()}</b>`;
+  document.getElementById("settingsModal").style.display = "block";
+  updateUnitButtons();
+}
+function closeSettings(){
+  document.getElementById("settingsModal").style.display = "none";
+}
+async function saveSheetUrl(){
+  const url = document.getElementById("sheetUrlInput").value.trim();
+  const msg = document.getElementById("sheetSaveMsg");
+  if(!url){ clearSheetUrl(); return; }
+  localStorage.setItem(SHEET_KEY, url);
+  msg.textContent = "Cargando rutina desde Sheets...";
+  msg.style.color = "var(--soft)";
+  msg.style.display = "block";
+  await loadSheetIfConfigured();
+  if(sheetStatus==="ok"){
+    msg.textContent = `✓ ${ROUTINES.length} rutinas cargadas correctamente desde Sheets.`;
+    msg.style.color = "var(--green)";
+    // Rebuild state with new ROUTINES
+    const raw = localStorage.getItem(KEY);
+    try{
+      const parsed = raw ? JSON.parse(raw) : {};
+      state = Object.assign(defaultState(), parsed);
+    }catch(e){ state = defaultState(); }
+    updateSheetBadge();
+    setTimeout(()=>{ closeSettings(); renderAll(); }, 800);
+  } else {
+    msg.textContent = "✗ No se pudo conectar con la Sheet. Revisa el URL y que esté publicada como CSV.";
+    msg.style.color = "#ff3b30";
+  }
+}
+function clearSheetUrl(){
+  localStorage.removeItem(SHEET_KEY);
+  ROUTINES = ROUTINES_FALLBACK;
+  sheetStatus = "fallback";
+  document.getElementById("sheetUrlInput").value = "";
+  const msg = document.getElementById("sheetSaveMsg");
+  msg.textContent = "Sheet desconectada. Usando rutina local.";
+  msg.style.color = "var(--soft)";
+  msg.style.display = "block";
+  updateSheetBadge();
+  setTimeout(()=>{ closeSettings(); renderAll(); }, 600);
+}
+function updateSheetBadge(){
+  const el = document.getElementById("sheetStatusBadge");
+  if(!el) return;
+  if(sheetStatus==="ok") el.textContent = "📊 Sheets";
+  else if(sheetStatus==="error") el.textContent = "⚠️ Sheets";
+  else el.textContent = "";
+}
+
+async function init(){
+  await loadSheetIfConfigured();
+  // Re-initialize state after ROUTINES may have been replaced by Sheet data
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      const def = defaultState();
+      state = Object.assign(def, parsed);
+    } else { state = defaultState(); }
+  }catch(e){ state = defaultState(); }
+  currentRoutine = state.currentRoutine || (ROUTINES[0]&&ROUTINES[0].id) || "leg";
+  currentWeek    = state.currentWeek    || 1;
+  renderAll();
+  updateSheetBadge();
+}
+
+init();
+</script>
+</body>
+</html>

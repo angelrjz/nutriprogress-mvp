@@ -133,3 +133,183 @@
 .detailMeta{color:var(--muted);font-size:12px;margin-bottom:8px;line-height:1.45}
 .aiStatus{margin-top:10px;color:var(--muted);font-size:12px}
 @media(max-width:640px){.titleActions{justify-content:flex-start}.smallBtn{width:100%}}
+
+/* ─── PDF / PRINT STYLES ──────────────────────────────────────────────────── */
+/* Activated via body.pdf-mode class before window.print() */
+
+@media print {
+  /* Page setup */
+  @page {
+    size: A4 landscape;
+    margin: 12mm 14mm;
+  }
+
+  /* Reset backgrounds for print */
+  body {
+    background: #fff !important;
+    color: #0d1117 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide interactive / non-report elements */
+  .toolbar,
+  .week-bar,
+  #metricBtns,
+  .panel:has(#metricBtns),
+  .footerNote,
+  #pdfExportBtn,
+  #aiSummaryBtn,
+  .tooltip,
+  button:not(.pdf-keep) {
+    display: none !important;
+  }
+
+  /* Main container */
+  .app {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 10px;
+    break-inside: avoid;
+  }
+  h1 { font-size: 22px !important; color: #0d1117 !important; }
+  .subtitle { color: #4a5568 !important; font-size: 12px !important; }
+  .meta {
+    background: #f0f4f8 !important;
+    border: 1px solid #cbd5e0 !important;
+    color: #0d1117 !important;
+    box-shadow: none !important;
+  }
+  .meta b { color: #1a56db !important; }
+
+  /* All panels */
+  .panel {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e0 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  /* Grid */
+  .grid {
+    gap: 10px;
+  }
+
+  /* KPIs — keep 2 columns on landscape A4 */
+  .kpi {
+    grid-column: span 2 !important;
+    min-height: 90px !important;
+    page-break-inside: avoid;
+  }
+  .kpi .name { color: #4a5568 !important; }
+  .kpi .value { font-size: 26px !important; }
+  .kpi:after { display: none !important; }
+
+  /* Charts — side by side */
+  .chartCard {
+    grid-column: span 6 !important;
+    min-height: 260px !important;
+    break-inside: avoid;
+  }
+  .chartTitle { font-size: 13px !important; }
+  .chartTitle span { color: #4a5568 !important; }
+
+  /* Half panels */
+  .half { grid-column: span 6 !important; break-inside: avoid; }
+
+  /* Full panels — tables */
+  .full { grid-column: span 12 !important; break-inside: avoid; }
+
+  /* Tables */
+  table { font-size: 12px !important; }
+  th { background: #e2e8f0 !important; color: #4a5568 !important; }
+  th, td { border-bottom: 1px solid #e2e8f0 !important; padding: 8px !important; }
+  .good { color: #16a34a !important; }
+  .bad  { color: #dc2626 !important; }
+  .neutral { color: #6b7280 !important; }
+
+  /* Detail date panel */
+  .dateDetail { grid-template-columns: 1fr 1fr !important; }
+  .detailTable { font-size: 11px !important; }
+  .detailMeta { color: #4a5568 !important; }
+  .badge { border: 1px solid #cbd5e0 !important; color: #1a56db !important; }
+
+  /* Goals */
+  .progressBar { background: #e2e8f0 !important; }
+  .progressFill { background: linear-gradient(90deg, #1a56db, #1d9bf0) !important; }
+
+  /* Insights */
+  .insights { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .insight {
+    background: #f0f4f8 !important;
+    border: 1px solid #cbd5e0 !important;
+    color: #0d1117 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  .insight b { color: #1a56db !important; }
+
+  /* SVG chart elements */
+  .axis { stroke: #cbd5e0 !important; }
+  .tickText { fill: #4a5568 !important; }
+  .valueText { fill: #0d1117 !important; }
+  .line { stroke-width: 2.5 !important; filter: none !important; }
+  .dot { stroke: #fff !important; }
+
+  /* Compare section */
+  .compare { grid-template-columns: 1fr 1fr !important; }
+
+  /* Separación entre secciones principales */
+  section + section { margin-top: 8px !important; }
+
+  /* PDF report header stamp — shown only in print */
+  .pdf-stamp { display: block !important; }
+}
+
+/* PDF stamp: hidden in screen, visible in print */
+.pdf-stamp {
+  display: none;
+  font-size: 11px;
+  color: #4a5568;
+  text-align: right;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Metric buttons section — hide in print via selector above,
+   but we need to hide its parent panel too */
+.panel.metric-panel-wrapper { display: none !important; }
+@media print {
+  .panel.metric-panel-wrapper { display: none !important; }
+}
+
+/* Loading overlay for PDF generation */
+#pdfLoadingOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(3,6,9,.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  color: #f2f5f7;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+#pdfLoadingOverlay.visible { display: flex; }
+#pdfLoadingOverlay .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(255,255,255,.15);
+  border-top-color: #1593ff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -17,6 +17,11 @@
       <div><b id="patientName">Ángel Ruiz</b> · <span id="patientAge">30 años</span></div>
       <div>Última plicometría: <b id="lastComposition">Junio</b></div>
       <div>Última bioimpedancia: <b id="lastAccuniq">05.06.2026</b></div>
+      <div style="margin-top:12px;">
+        <button class="ghost" id="pdfExportBtn" onclick="exportPDF()" style="width:100%;font-size:13px;padding:9px 14px;">
+          📄 Exportar reporte PDF
+        </button>
+      </div>
     </div>
   </header>
 
@@ -36,7 +41,7 @@
     </div>
   </section>
 
-  <section class="panel" style="margin-bottom:16px">
+  <section class="panel metric-panel-wrapper" style="margin-bottom:16px">
     <div class="label">Métrica activa</div>
     <div id="metricBtns" class="metricBtns"></div>
   </section>
@@ -105,5 +110,6 @@
 
 <div class="tooltip" id="tooltip"></div>
 <script src="./app.js"></script>
+<script src="./pdf-export.js"></script>
 </body>
 </html>

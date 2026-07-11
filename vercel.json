@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/angel",
+      "destination": "/?sheet=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTifpfrfp9a_-lBfjprclesoo5-2kZTl7_jMdypLpiVyNCeg5whur0aTAT3dIOF8nYRwrtGjxnGGk-q%2Fpub%3Foutput%3Dcsv"
+    }
+  ]
+}
